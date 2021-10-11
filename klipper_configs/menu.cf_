@@ -1,0 +1,103 @@
+
+
+[menu __voron_menu]
+type: list
+name: Main Menu
+items:
+    __vtune
+    __control
+    __temp
+    __sdcard
+    __filament
+    __prepare
+
+[menu __vtune]
+type: list
+enable: toolhead.is_printing
+name: Current Print
+items:
+    .__offsetz
+    .__pause
+    .__resume
+    .__abort
+    .__speed
+    .__flow
+
+[menu __vtune __offsetz]
+type: input
+name: "Offset Z:{0:05.3f} "
+parameter: gcode.homing_zpos
+input_min: -5
+input_max: 5
+input_step: 0.005
+realtime: true
+gcode: SET_GCODE_OFFSET Z={0:.3f} MOVE=1
+
+[menu __vtune __pause]
+type: command
+enable: toolhead.is_printing
+name: Pause printing
+gcode: M25
+
+[menu __vtune __resume]
+type: command
+enable: toolhead.is_printing
+name: Resume printing
+gcode: M24
+
+[menu __vtune __abort]
+type: command
+enable: toolhead.is_printing
+name: Abort printing
+gcode:
+  PAUSE
+  SAVE_GCODE_STATE
+  G91
+  G0 Z10 F1200
+  RESTORE_GCODE_STATE
+  RESET_SD
+
+[menu __vtune __speed]
+type: input
+name: "Speed: {1:3d}%"
+parameter: gcode.speed_factor
+transform:
+    map(0,2,0,200)
+input_min: 0
+input_max: 2
+input_step: 0.01
+realtime: true
+gcode: M220 S{1:d}
+
+[menu __vtune __flow]
+type: input
+name: "Flow: {1:3d}%"
+parameter: gcode.extrude_factor
+transform:
+    map(0,2,0,200)
+input_min: 0
+input_max: 2
+input_step: 0.01
+realtime: true
+gcode: M221 S{1:d}
+
+[menu __control]
+type: list
+name: "Control"
+items:
+    .__home
+    .__qgl
+    .__homez
+    .__homexy
+    .__move_10mm
+    .__move_1mm
+    .__move_01mm
+    .__disable
+    .__fanonoff
+    .__fanspeed
+
+[menu __control __qgl]
+type: command
+name: QGL
+gcode: QUAD_GANTRY_LEVEL
+enable: !toolhead.is_printing
